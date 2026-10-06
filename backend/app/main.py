@@ -6,8 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app import models  # noqa: F401  (registers tables with SQLAlchemy)
-from app.config import settings
-from app.database import Base, engine
+from app.core.config import settings
+from app.core.database import Base, engine
 from app.migrations import run_migrations
 from app.routers import admin, assignments, attendance, auth, students
 

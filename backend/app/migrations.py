@@ -8,12 +8,8 @@ Upgrade from the first version of the project:
                                     Change any of them later from Admin -> Students -> Change Lab.
   2. attendance_records.lab      -> new column. Filled in from the student's lab at upgrade time so the
                                     attendance history can be shown per lab. Attendance rows are not changed otherwise.
-Before the first change on a SQLite database a backup copy of the file is saved next to it.
 """
 import logging
-import shutil
-from datetime import datetime
-from pathlib import Path
 
 from sqlalchemy import inspect, text
 from sqlalchemy.engine import Engine
@@ -21,23 +17,6 @@ from sqlalchemy.engine import Engine
 from app.seed_data import initial_lab_by_reg
 
 logger = logging.getLogger("java_for_dsa")
-
-
-def _sqlite_file(engine: Engine) -> Path | None:
-    if engine.dialect.name != "sqlite" or not engine.url.database or engine.url.database == ":memory:":
-        return None
-    path = Path(engine.url.database)
-    return path if path.is_absolute() else Path.cwd() / path
-
-
-def _backup_sqlite(engine: Engine) -> None:
-    path = _sqlite_file(engine)
-    if path is None or not path.exists():
-        return
-    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    target = path.with_name(f"{path.name}.backup-before-lab-upgrade-{stamp}")
-    shutil.copy2(path, target)
-    logger.warning("Database upgrade: saved a backup copy to %s", target)
 
 
 def run_migrations(engine: Engine) -> None:
@@ -52,8 +31,6 @@ def run_migrations(engine: Engine) -> None:
     need_record_lab = "attendance_records" in tables and "lab" not in record_cols
     if not (need_student_lab or need_record_lab):
         return
-
-    _backup_sqlite(engine)
 
     with engine.begin() as conn:  # one transaction: all-or-nothing
         if need_student_lab:

@@ -1,22 +1,8 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
+"""Backward-compatible database exports for the application.
 
-from app.config import settings
+Prefer importing from app.core.database for new code.
+"""
 
-# SQLite needs check_same_thread=False under FastAPI; PostgreSQL needs no extra args.
-_connect_args = {"check_same_thread": False} if settings.DATABASE_URL.startswith("sqlite") else {}
+from app.core.database import Base, SessionLocal, engine, get_db
 
-engine = create_engine(settings.DATABASE_URL, connect_args=_connect_args, pool_pre_ping=True)
-SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
-
-
-class Base(DeclarativeBase):
-    pass
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+__all__ = ["Base", "SessionLocal", "engine", "get_db"]
