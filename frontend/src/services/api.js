@@ -56,7 +56,7 @@ export const fetchDay = (day) => api.get(`/assignments/day/${day}`).then((r) => 
 
 // Admin
 export const loginAdmin = (password) =>
-  api.post("/admin/login", { password }).then((r) => r.data);
+  api.post("/admin/login", { email: "admin@csi.org", password }).then((r) => r.data);
 export const fetchMe = () => api.get("/admin/me").then((r) => r.data);
 export const fetchAdminAssignments = () => api.get("/admin/assignments").then((r) => r.data);
 export const createAssignment = (data) => api.post("/assignments", data).then((r) => r.data);
