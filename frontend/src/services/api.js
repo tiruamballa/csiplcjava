@@ -2,8 +2,10 @@ import axios from "axios";
 
 export const TOKEN_KEY = "csi_admin_token";
 
+const rawApiUrl = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/+$/, "");
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000",
+  baseURL: rawApiUrl,
   timeout: 15000,
 });
 

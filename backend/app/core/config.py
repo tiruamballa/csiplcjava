@@ -24,7 +24,7 @@ class Settings:
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "480"))
     DATABASE_URL: str = _raw_db_url
     CORS_ORIGINS: list[str] = [
-        o.strip() for o in os.getenv("CORS_ORIGINS", "http://localhost:5173,*").split(",") if o.strip()
+        o.strip().rstrip("/") for o in os.getenv("CORS_ORIGINS", "http://localhost:5173,*").split(",") if o.strip()
     ]
     TIMEZONE: str = os.getenv("TIMEZONE", "Asia/Kolkata")
     SUPABASE_URL: str = os.getenv("SUPABASE_URL", "").strip()
