@@ -67,7 +67,7 @@ export default function StudentLookupModal({ open, onClose }) {
             <input
               type="text"
               className="lookup-input"
-              placeholder="Search by roll number or name (e.g., 25B91A0501, Mokshagna)..."
+              placeholder="Search by roll number or name (e.g., 24B91A1206, Tiru)..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               autoFocus
