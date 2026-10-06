@@ -472,3 +472,52 @@ a:hover { color: var(--java-dark); }
   font-weight: 600;
   text-align: right;
 }
+
+/* ---------- Lookup Dialog Modal ---------- */
+.lookup-dialog {
+  width: min(740px, 95vw) !important;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem !important;
+  overflow: hidden;
+}
+.lookup-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.lookup-modal-header h3 {
+  margin: 0 0 0.2rem 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+.close-modal-btn {
+  border: 0;
+  background: #f1f5f9;
+  color: var(--muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+.close-modal-btn:hover {
+  background: #e2e8f0;
+  color: var(--text);
+}
+.lookup-modal-controls {
+  margin-bottom: 1rem;
+}
+.lookup-results-container {
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 0.25rem;
+  margin-top: 0.5rem;
+}

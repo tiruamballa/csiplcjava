@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import StudentLookup from "../components/StudentLookup.jsx";
+import StudentLookupModal from "../components/StudentLookupModal.jsx";
 import TodayAssignments from "../components/TodayAssignments.jsx";
 
 export default function Home() {
+  const [showLookup, setShowLookup] = useState(false);
+
   return (
     <>
       <section className="hero">
@@ -13,21 +16,30 @@ export default function Home() {
               Strengthen your Java fundamentals<br />and build your problem-solving skills.
             </p>
             <div className="hero-actions">
-              <a href="#lookup" className="btn btn-primary">Find Your Lab</a>
-              <a href="#today" className="btn btn-light">Today's Assignments</a>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => setShowLookup(true)}
+              >
+                Find Your Lab & Attendance
+              </button>
+              <a href="#today" className="btn btn-light">
+                Today's Assignments
+              </a>
             </div>
           </div>
           <div className="hero-logo-wrap" aria-label="CSI logo">
-            <img
-              src="/csi-logo.png"
-              alt="CSI logo"
-              className="hero-logo"
-            />
+            <img src="/csi-logo.png" alt="CSI logo" className="hero-logo" />
           </div>
         </div>
       </section>
-      <StudentLookup />
+
       <TodayAssignments />
+
+      <StudentLookupModal
+        open={showLookup}
+        onClose={() => setShowLookup(false)}
+      />
     </>
   );
 }
