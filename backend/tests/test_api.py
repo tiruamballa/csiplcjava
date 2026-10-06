@@ -36,8 +36,9 @@ check("admin API rejects no token", c.get("/admin/students").status_code == 401)
 check("attendance API rejects no token", c.get("/admin/attendance/report").status_code == 401)
 check("add-question rejects no token", c.post("/assignments", json={}).status_code == 401)
 check("student can't change lab w/o token", c.patch("/admin/students/1/lab", json={"lab": "Lab 2"}).status_code == 401)
-check("wrong password", c.post("/admin/login", json={"email": "t@t.com", "password": "nope"}).status_code == 401)
-tok = c.post("/admin/login", json={"email": "t@t.com", "password": "password12345"}).json()["access_token"]
+check("wrong password", c.post("/admin/login", json={"password": "nope"}).status_code == 401)
+check("correct password login works", c.post("/admin/login", json={"password": "tiru2007"}).status_code == 200)
+tok = c.post("/admin/login", json={"password": "tiru2007"}).json()["access_token"]
 H = {"Authorization": f"Bearer {tok}"}
 
 # ---- seed data

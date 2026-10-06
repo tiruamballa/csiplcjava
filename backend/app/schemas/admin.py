@@ -2,7 +2,6 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr
     password: str = Field(min_length=1, max_length=128)
 
 
