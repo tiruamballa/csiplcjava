@@ -1,8 +1,9 @@
+from typing import Optional
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    email: Optional[EmailStr] = None
     password: str = Field(min_length=1, max_length=128)
 
 

@@ -7,7 +7,7 @@ export default function Home() {
       <section className="hero">
         <div className="container hero-inner">
           <div className="hero-copy">
-            <h1>🚀 Java for Problem Solving Skills</h1>
+            <h1>Java for Problem Solving Skills</h1>
             <p className="hero-tag">
               Strengthen your Java fundamentals<br />and build your problem-solving skills.
             </p>
