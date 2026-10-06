@@ -53,6 +53,8 @@ export function getFieldErrors(err) {
 export const fetchToday = () => api.get("/assignments/today").then((r) => r.data);
 export const fetchAll = () => api.get("/assignments").then((r) => r.data);
 export const fetchDay = (day) => api.get(`/assignments/day/${day}`).then((r) => r.data);
+export const fetchPublicStudents = (query = "") =>
+  api.get(`/public/students${query ? `?q=${encodeURIComponent(query)}` : ""}`).then((r) => r.data);
 
 // Admin
 export const loginAdmin = (password) =>

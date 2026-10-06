@@ -9,7 +9,7 @@ from app import models  # noqa: F401  (registers tables with SQLAlchemy)
 from app.core.config import settings
 from app.core.database import Base, engine
 from app.migrations import run_migrations
-from app.routers import admin, assignments, attendance, auth, students
+from app.routers import admin, assignments, attendance, auth, public, students
 
 logger = logging.getLogger("java_for_dsa")
 
@@ -55,6 +55,7 @@ app.include_router(admin.router)
 app.include_router(assignments.router)
 app.include_router(students.router)
 app.include_router(attendance.router)
+app.include_router(public.router)
 
 
 @app.get("/", tags=["health"])

@@ -303,3 +303,172 @@ a:hover { color: var(--java-dark); }
   .att-name { flex-basis: calc(100% - 7.5rem); }
   .seg { width: 100%; } .seg-btn { flex: 1; }
 }
+
+/* ---------- Student Lookup Component ---------- */
+.lookup-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+}
+.lookup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.lookup-header h2 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 0.35rem;
+}
+.lookup-tabs {
+  display: flex;
+  gap: 0.35rem;
+  background: #f1f5f9;
+  padding: 0.3rem;
+  border-radius: 12px;
+}
+.tab-btn {
+  border: 0;
+  background: transparent;
+  padding: 0.45rem 0.9rem;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--muted);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.tab-btn:hover {
+  color: var(--text);
+}
+.tab-btn.active {
+  background: var(--surface);
+  color: var(--java);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.lookup-search-field {
+  position: relative;
+  margin-bottom: 1.75rem;
+}
+.lookup-input {
+  font-size: 1.05rem !important;
+  padding: 0.85rem 2.8rem 0.85rem 1.1rem !important;
+  border-radius: 12px !important;
+  border-color: var(--line-strong) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+.clear-btn {
+  position: absolute;
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: #e2e8f0;
+  color: var(--muted);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+.clear-btn:hover {
+  background: #cbd5e1;
+  color: var(--text);
+}
+
+.lookup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+.lookup-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.03);
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.lookup-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--java);
+  box-shadow: var(--shadow);
+}
+.lookup-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.student-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 0.2rem 0;
+}
+.student-roll {
+  font-family: var(--font-code);
+  font-size: 0.88rem;
+  color: var(--muted);
+  font-weight: 600;
+  background: #f1f5f9;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+}
+.badge-lab {
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.badge-lab.lab1 {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+.badge-lab.lab2 {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.pct-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+.pct-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.pct-value {
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+.pct-value.ok {
+  color: #059669;
+}
+.pct-value.low {
+  color: #dc2626;
+}
+.pct-sub {
+  margin-top: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-weight: 600;
+  text-align: right;
+}

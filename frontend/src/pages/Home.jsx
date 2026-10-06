@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import StudentLookup from "../components/StudentLookup.jsx";
 import TodayAssignments from "../components/TodayAssignments.jsx";
 
 export default function Home() {
@@ -12,8 +13,8 @@ export default function Home() {
               Strengthen your Java fundamentals<br />and build your problem-solving skills.
             </p>
             <div className="hero-actions">
-              <a href="#today" className="btn btn-primary">Today's Assignments</a>
-              <Link to="/previous" className="btn btn-light">Previous Assignments</Link>
+              <a href="#lookup" className="btn btn-primary">Find Your Lab</a>
+              <a href="#today" className="btn btn-light">Today's Assignments</a>
             </div>
           </div>
           <div className="hero-logo-wrap" aria-label="CSI logo">
@@ -25,6 +26,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <StudentLookup />
       <TodayAssignments />
     </>
   );
