@@ -21,7 +21,7 @@ export default function Home() {
                 className="btn btn-primary"
                 onClick={() => setShowLookup(true)}
               >
-                Find Your Lab & Attendance
+                Know your rollno and attendance
               </button>
               <a href="#today" className="btn btn-light">
                 Today's Assignments

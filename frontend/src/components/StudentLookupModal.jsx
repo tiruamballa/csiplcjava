@@ -3,7 +3,6 @@ import { fetchPublicStudents } from "../services/api.js";
 
 export default function StudentLookupModal({ open, onClose }) {
   const [query, setQuery] = useState("");
-  const [labFilter, setLabFilter] = useState("All");
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -42,17 +41,12 @@ export default function StudentLookupModal({ open, onClose }) {
 
   if (!open) return null;
 
-  const filtered = students.filter((s) => {
-    if (labFilter === "All") return true;
-    return s.lab === labFilter;
-  });
-
   return (
     <div className="overlay lookup-overlay" onClick={onClose}>
       <div className="dialog lookup-dialog" onClick={(e) => e.stopPropagation()}>
         <div className="lookup-modal-header">
           <div>
-            <h3>Find Your Lab & Attendance</h3>
+            <h3>Know your rollno and attendance</h3>
             <p className="muted">
               Search by Registration Number, Full Name, or Middle Name.
             </p>
@@ -78,18 +72,6 @@ export default function StudentLookupModal({ open, onClose }) {
               </button>
             )}
           </div>
-
-          <div className="lookup-tabs">
-            {["All", "Lab 1", "Lab 2"].map((lab) => (
-              <button
-                key={lab}
-                className={`tab-btn ${labFilter === lab ? "active" : ""}`}
-                onClick={() => setLabFilter(lab)}
-              >
-                {lab === "All" ? "All Labs" : lab}
-              </button>
-            ))}
-          </div>
         </div>
 
         {error && <div className="alert alert-error">{error}</div>}
@@ -100,7 +82,7 @@ export default function StudentLookupModal({ open, onClose }) {
               <span className="spinner" />
               <p>Loading student details…</p>
             </div>
-          ) : filtered.length === 0 ? (
+          ) : students.length === 0 ? (
             <div className="state">
               <h4>No students found</h4>
               <p>
@@ -111,7 +93,7 @@ export default function StudentLookupModal({ open, onClose }) {
             </div>
           ) : (
             <div className="lookup-grid">
-              {filtered.map((s) => (
+              {students.map((s) => (
                 <div key={s.id} className="lookup-card">
                   <div className="lookup-card-top">
                     <div>
@@ -121,9 +103,6 @@ export default function StudentLookupModal({ open, onClose }) {
                         <span className="student-roll">{s.roll_number}</span>
                       </div>
                     </div>
-                    <span className={`badge-lab ${s.lab === "Lab 1" ? "lab1" : "lab2"}`}>
-                      {s.lab}
-                    </span>
                   </div>
                   <div className="lookup-card-bottom">
                     <div className="pct-info">
