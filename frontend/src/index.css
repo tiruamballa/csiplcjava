@@ -526,3 +526,42 @@ a:hover { color: var(--java-dark); }
   padding-right: 0.25rem;
   margin-top: 0.5rem;
 }
+
+/* ---------- PLC Roll Badge & Mobile Adjustments ---------- */
+.plc-roll-badge {
+  display: inline-block;
+  font-family: var(--font-code);
+  font-weight: 800;
+  font-size: 0.8rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 6px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  letter-spacing: 0.02em;
+}
+.plc-roll-badge.mini-badge {
+  font-size: 0.75rem;
+  padding: 0.12rem 0.45rem;
+  margin-right: 0.4rem;
+}
+.student-rolls {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .field-row { flex-direction: column; gap: 0; }
+  .stats { grid-template-columns: repeat(2, 1fr) !important; gap: 0.75rem; }
+  .stat { padding: 0.85rem 1rem; }
+  .stat strong { font-size: 1.5rem; }
+  .lookup-dialog { width: 96vw !important; padding: 1.2rem 1rem !important; max-height: 92vh; }
+  .lookup-grid { grid-template-columns: 1fr; }
+  .att-toolbar { flex-direction: column; align-items: stretch; gap: 0.75rem; }
+  .att-date, .att-lab { max-width: none; width: 100%; }
+  .att-tools { flex-direction: column; align-items: stretch; }
+  .att-tools .btn { width: 100%; }
+}

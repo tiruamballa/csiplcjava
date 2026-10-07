@@ -189,12 +189,13 @@ export default function Students({ onChanged = () => {} }) {
 
         {rows.length > 0 && (
           <table className="table stack-table">
-            <thead><tr><th>Registration No</th><th>Name</th><th>Lab</th><th>Actions</th></tr></thead>
+            <thead><tr><th>PLC Roll No</th><th>Registration No</th><th>Name</th><th>Lab</th><th>Actions</th></tr></thead>
             <tbody>
               {rows.map((s) => (
                 <tr key={s.id}>
                   {edit?.id === s.id ? (
                     <>
+                      <td data-label="PLC Roll No" className="mono"><span className="plc-roll-badge">{s.plc_roll_number}</span></td>
                       <td data-label="Registration No">
                         <input className="mini full" value={edit.roll_number} aria-label="Registration number"
                                onChange={(e) => setEdit({ ...edit, roll_number: e.target.value })} />
@@ -218,6 +219,7 @@ export default function Students({ onChanged = () => {} }) {
                     </>
                   ) : (
                     <>
+                      <td data-label="PLC Roll No" className="mono"><span className="plc-roll-badge">{s.plc_roll_number}</span></td>
                       <td data-label="Registration No" className="mono">{s.roll_number}</td>
                       <td data-label="Name" className="strong">{s.name}</td>
                       <td data-label="Lab"><LabBadge lab={s.lab} /></td>

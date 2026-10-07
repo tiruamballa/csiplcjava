@@ -61,6 +61,7 @@ class StudentOut(BaseModel):
     roll_number: str
     name: str
     lab: Lab
+    plc_roll_number: str = ""
 
 
 class BulkItem(BaseModel):

@@ -116,7 +116,10 @@ export default function StudentLookupModal({ open, onClose }) {
                   <div className="lookup-card-top">
                     <div>
                       <h4 className="student-name">{s.name}</h4>
-                      <span className="student-roll">{s.roll_number}</span>
+                      <div className="student-rolls">
+                        {s.plc_roll_number && <span className="plc-roll-badge">{s.plc_roll_number}</span>}
+                        <span className="student-roll">{s.roll_number}</span>
+                      </div>
                     </div>
                     <span className={`badge-lab ${s.lab === "Lab 1" ? "lab1" : "lab2"}`}>
                       {s.lab}

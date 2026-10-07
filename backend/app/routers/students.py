@@ -4,6 +4,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.auth.jwt import get_current_admin
+from app.core.plc import get_plc_roll_map
 from app.database import get_db
 from app.models.student import Student
 from app.schemas.student import (
@@ -34,7 +35,14 @@ def list_students(lab: Lab | None = Query(default=None), db: Session = Depends(g
     stmt = select(Student).order_by(func.lower(Student.roll_number))
     if lab:
         stmt = stmt.where(Student.lab == lab)
-    return db.scalars(stmt).all()
+    students = db.scalars(stmt).all()
+    plc_map = get_plc_roll_map(db)
+    result = []
+    for s in students:
+        so = StudentOut.model_validate(s)
+        so.plc_roll_number = plc_map.get(s.id, "")
+        result.append(so)
+    return result
 
 
 @router.post("", response_model=StudentOut, status_code=status.HTTP_201_CREATED)
@@ -45,7 +53,10 @@ def add_student(data: StudentIn, db: Session = Depends(get_db)):
     db.add(student)
     db.commit()
     db.refresh(student)
-    return student
+    plc_map = get_plc_roll_map(db)
+    so = StudentOut.model_validate(student)
+    so.plc_roll_number = plc_map.get(student.id, "")
+    return so
 
 
 @router.post("/bulk", response_model=BulkResult)
@@ -87,7 +98,10 @@ def update_student(student_id: int, data: StudentUpdate, db: Session = Depends(g
         student.lab = data.lab
     db.commit()
     db.refresh(student)
-    return student
+    plc_map = get_plc_roll_map(db)
+    so = StudentOut.model_validate(student)
+    so.plc_roll_number = plc_map.get(student.id, "")
+    return so
 
 
 @router.patch("/{student_id}/lab", response_model=StudentOut)
@@ -97,7 +111,10 @@ def change_lab(student_id: int, data: LabChange, db: Session = Depends(get_db)):
     student.lab = data.lab
     db.commit()
     db.refresh(student)
-    return student
+    plc_map = get_plc_roll_map(db)
+    so = StudentOut.model_validate(student)
+    so.plc_roll_number = plc_map.get(student.id, "")
+    return so
 
 
 @router.delete("/{student_id}", status_code=status.HTTP_204_NO_CONTENT)

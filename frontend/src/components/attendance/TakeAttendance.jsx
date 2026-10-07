@@ -41,7 +41,7 @@ export default function TakeAttendance({ date, setDate, lab, setLab, onSaved }) 
   const present = editable.filter((s) => marks[s.student_id] === "Present").length;
   const visible = useMemo(() => {
     const t = q.trim().toLowerCase();
-    return t ? rows.filter((s) => s.name.toLowerCase().includes(t) || s.roll_number.toLowerCase().includes(t)) : rows;
+    return t ? rows.filter((s) => s.name.toLowerCase().includes(t) || s.roll_number.toLowerCase().includes(t) || (s.plc_roll_number && s.plc_roll_number.toLowerCase().includes(t))) : rows;
   }, [rows, q]);
 
   const setAll = (status) => setMarks(Object.fromEntries(editable.map((s) => [s.student_id, status])));
@@ -110,7 +110,10 @@ export default function TakeAttendance({ date, setDate, lab, setLab, onSaved }) 
           <ul className="att-list">
             {visible.map((s) => (
               <li key={s.student_id} className="att-row">
-                <span className="att-roll">{s.roll_number}</span>
+                <span className="att-roll">
+                  {s.plc_roll_number && <span className="plc-roll-badge mini-badge">{s.plc_roll_number}</span>}
+                  <span>{s.roll_number}</span>
+                </span>
                 <span className="att-name">
                   {s.name}
                   {s.locked && <em className="att-note">Already marked {s.status} in {s.recorded_lab} on this date</em>}

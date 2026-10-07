@@ -24,9 +24,6 @@ export default function Layout() {
             <NavLink to="/" end onClick={close}>Home</NavLink>
             <NavLink to="/today" onClick={close}>Today's Assignments</NavLink>
             <NavLink to="/previous" onClick={close}>Previous Assignments</NavLink>
-            {isAuthenticated && (
-              <NavLink to="/admin" className="nav-admin" onClick={close}>Admin Dashboard</NavLink>
-            )}
           </nav>
         </div>
       </header>
@@ -39,7 +36,6 @@ export default function Layout() {
             <p>Java for Problem Solving Skills · CSI | Computer Society of India</p>
             <span className="footer-credit">@tiruamballa</span>
           </div>
-          <Link to="/admin/login" className="footer-admin">Admin</Link>
         </div>
       </footer>
     </>
