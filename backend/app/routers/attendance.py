@@ -42,9 +42,9 @@ def attendance_report(lab: Lab | None = Query(default=None), db: Session = Depen
     present = func.coalesce(func.sum(case((AttendanceRecord.status == "Present", 1), else_=0)), 0)
     total = func.count(AttendanceRecord.id)
     stmt = (
-        select(Student.id, Student.roll_number, Student.name, Student.lab, present, total)
+        select(Student.id, Student.roll_number, Student.plc_roll_number, Student.name, Student.lab, present, total)
         .outerjoin(AttendanceRecord, AttendanceRecord.student_id == Student.id)
-        .group_by(Student.id, Student.roll_number, Student.name, Student.lab)
+        .group_by(Student.id, Student.roll_number, Student.plc_roll_number, Student.name, Student.lab)
         .order_by(func.lower(Student.roll_number))
     )
     if lab:
@@ -52,10 +52,10 @@ def attendance_report(lab: Lab | None = Query(default=None), db: Session = Depen
     rows = db.execute(stmt).all()
     students = [
         StudentSummary(
-            id=i, roll_number=r, name=n, lab=l, present=int(p), absent=int(t) - int(p), total=int(t),
+            id=i, roll_number=r, plc_roll_number=plc, name=n, lab=l, present=int(p), absent=int(t) - int(p), total=int(t),
             percentage=round(int(p) / int(t) * 100, 1) if t else 0.0,
         )
-        for i, r, n, l, p, t in rows
+        for i, r, plc, n, l, p, t in rows
     ]
     sessions_stmt = select(func.count(func.distinct(AttendanceRecord.session_date)))
     if lab:
@@ -76,7 +76,7 @@ def _day(db: Session, d: date, lab: str, skipped: int = 0) -> AttendanceDay:
     for s in db.scalars(stmt):
         r = records.get(s.id)
         rows.append(AttendanceRow(
-            student_id=s.id, roll_number=s.roll_number, name=s.name, current_lab=s.lab,
+            student_id=s.id, roll_number=s.roll_number, plc_roll_number=s.plc_roll_number, name=s.name, current_lab=s.lab,
             status=r.status if r else None,
             recorded_lab=(r.lab or s.lab) if r else None,
             locked=bool(r and r.lab and r.lab != lab),

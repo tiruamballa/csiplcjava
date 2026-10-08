@@ -22,6 +22,7 @@ class AttendanceRow(BaseModel):
     """One student in the attendance sheet for a given date + lab."""
     student_id: int
     roll_number: str
+    plc_roll_number: str | None = None
     name: str
     current_lab: Lab          # where the student is today
     status: Status | None     # None = not marked yet for this date
@@ -47,6 +48,7 @@ class SessionSummary(BaseModel):
 class StudentSummary(BaseModel):
     id: int
     roll_number: str
+    plc_roll_number: str | None = None
     name: str
     lab: Lab
     present: int
