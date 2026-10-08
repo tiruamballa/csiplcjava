@@ -1,6 +1,13 @@
 """Small, safe, ADDITIVE migrations that run automatically every time the API starts.
 
 Nothing here ever drops a table/column or deletes a row. Running it twice does nothing the second time.
+
+Upgrade from the first version of the project:
+  1. students.lab                -> new column. Existing students get their lab from the initial list
+                                    (first 40 = Lab 1, the rest = Lab 2); anyone not in that list becomes Lab 1.
+                                    Change any of them later from Admin -> Students -> Change Lab.
+  2. attendance_records.lab      -> new column. Filled in from the student's lab at upgrade time so the
+                                    attendance history can be shown per lab. Attendance rows are not changed otherwise.
 """
 import logging
 
@@ -22,7 +29,8 @@ def run_migrations(engine: Engine) -> None:
 
     need_student_lab = "students" in tables and "lab" not in student_cols
     need_record_lab = "attendance_records" in tables and "lab" not in record_cols
-    need_student_plc = "students" in tables and "plc_roll_number" not in student_cols
+    if not (need_student_lab or need_record_lab):
+        return
 
     with engine.begin() as conn:  # one transaction: all-or-nothing
         if need_student_lab:
@@ -42,40 +50,7 @@ def run_migrations(engine: Engine) -> None:
             ))
             logger.warning("Database upgrade: added attendance_records.lab")
 
-        if need_student_plc:
-            conn.execute(text("ALTER TABLE students ADD COLUMN plc_roll_number VARCHAR(20)"))
-            logger.warning("Database upgrade: added students.plc_roll_number")
-
-        # Backfill any student missing a plc_roll_number permanently
-        if "students" in tables:
-            for lab_name, lab_code in [("Lab 1", "1"), ("Lab 2", "2")]:
-                unassigned = conn.execute(
-                    text("SELECT id FROM students WHERE lab = :lab AND (plc_roll_number IS NULL OR plc_roll_number = '') ORDER BY LOWER(roll_number)"),
-                    {"lab": lab_name}
-                ).all()
-                if unassigned:
-                    rows = conn.execute(
-                        text("SELECT plc_roll_number FROM students WHERE lab = :lab AND plc_roll_number IS NOT NULL AND plc_roll_number != ''"),
-                        {"lab": lab_name}
-                    ).all()
-                    max_num = 0
-                    prefix = f"plc{lab_code}"
-                    for (p,) in rows:
-                        if p and p.lower().startswith(prefix):
-                            digits = p[len(prefix):]
-                            if digits.isdigit():
-                                max_num = max(max_num, int(digits))
-
-                    for idx, (sid,) in enumerate(unassigned, start=max_num + 1):
-                        plc_code = f"{prefix}{idx:02d}"
-                        conn.execute(
-                            text("UPDATE students SET plc_roll_number = :plc WHERE id = :id"),
-                            {"plc": plc_code, "id": sid}
-                        )
-
     # Indexes (IF NOT EXISTS works on SQLite and PostgreSQL).
-    if "students" in tables:
-        with engine.begin() as conn:
-            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_students_lab ON students (lab)"))
-            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_students_plc ON students (plc_roll_number)"))
-            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_attendance_records_lab ON attendance_records (lab)"))
+    with engine.begin() as conn:
+        conn.execute(text("CREATE INDEX IF NOT EXISTS ix_students_lab ON students (lab)"))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS ix_attendance_records_lab ON attendance_records (lab)"))

@@ -39,10 +39,27 @@ export default function TakeAttendance({ date, setDate, lab, setLab, onSaved }) 
 
   const editable = rows.filter((s) => !s.locked);
   const present = editable.filter((s) => marks[s.student_id] === "Present").length;
+  const [sortBy, setSortBy] = useState("plc"); // "plc", "reg", "name"
+
   const visible = useMemo(() => {
     const t = q.trim().toLowerCase();
-    return t ? rows.filter((s) => s.name.toLowerCase().includes(t) || s.roll_number.toLowerCase().includes(t) || (s.plc_roll_number && s.plc_roll_number.toLowerCase().includes(t))) : rows;
-  }, [rows, q]);
+    let filtered = t
+      ? rows.filter((s) => s.name.toLowerCase().includes(t) || s.roll_number.toLowerCase().includes(t) || (s.plc_roll_number && s.plc_roll_number.toLowerCase().includes(t)))
+      : [...rows];
+
+    return filtered.sort((a, b) => {
+      if (sortBy === "plc") {
+        const valA = a.plc_roll_number || "";
+        const valB = b.plc_roll_number || "";
+        return valA.localeCompare(valB, undefined, { numeric: true, sensitivity: "base" });
+      } else if (sortBy === "reg") {
+        return a.roll_number.localeCompare(b.roll_number, undefined, { numeric: true, sensitivity: "base" });
+      } else if (sortBy === "name") {
+        return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
+      }
+      return 0;
+    });
+  }, [rows, q, sortBy]);
 
   const setAll = (status) => setMarks(Object.fromEntries(editable.map((s) => [s.student_id, status])));
 
@@ -101,8 +118,16 @@ export default function TakeAttendance({ date, setDate, lab, setLab, onSaved }) 
             : <p className="muted small">Everyone starts as Present. Mark the absentees, then save.</p>}
 
           <div className="att-tools">
-            <input className="search" type="search" placeholder="Search name, PLC roll no, or registration number"
+            <input className="search" type="search" placeholder="Search name, PLC roll no, or reg no"
                    value={q} onChange={(e) => setQ(e.target.value)} aria-label="Search students" />
+            <label className="inline">
+              <span>Sort:</span>
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} aria-label="Sort students by">
+                <option value="plc">PLC Roll No</option>
+                <option value="reg">Reg No</option>
+                <option value="name">Name</option>
+              </select>
+            </label>
             <button className="btn btn-ghost btn-sm" onClick={() => setAll("Present")}>All Present</button>
             <button className="btn btn-ghost btn-sm" onClick={() => setAll("Absent")}>All Absent</button>
           </div>
@@ -110,10 +135,10 @@ export default function TakeAttendance({ date, setDate, lab, setLab, onSaved }) 
           <ul className="att-list">
             {visible.map((s) => (
               <li key={s.student_id} className="att-row">
-                <span className="att-roll">
+                <div className="att-student-meta">
                   {s.plc_roll_number && <span className="plc-roll-badge mini-badge">{s.plc_roll_number}</span>}
-                  <span>{s.roll_number}</span>
-                </span>
+                  <span className="att-roll">{s.roll_number}</span>
+                </div>
                 <span className="att-name">
                   {s.name}
                   {s.locked && <em className="att-note">Already marked {s.status} in {s.recorded_lab} on this date</em>}
