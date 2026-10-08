@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 
 from app.auth.jwt import get_current_admin
 from app.config import today_local
-from app.core.plc import get_plc_roll_map
 from app.database import get_db
 from app.models.attendance import AttendanceRecord
 from app.models.student import Student
@@ -51,12 +50,10 @@ def attendance_report(lab: Lab | None = Query(default=None), db: Session = Depen
     if lab:
         stmt = stmt.where(Student.lab == lab)
     rows = db.execute(stmt).all()
-    plc_map = get_plc_roll_map(db)
     students = [
         StudentSummary(
             id=i, roll_number=r, name=n, lab=l, present=int(p), absent=int(t) - int(p), total=int(t),
             percentage=round(int(p) / int(t) * 100, 1) if t else 0.0,
-            plc_roll_number=plc_map.get(i, ""),
         )
         for i, r, n, l, p, t in rows
     ]
@@ -76,7 +73,6 @@ def _day(db: Session, d: date, lab: str, skipped: int = 0) -> AttendanceDay:
         or_(Student.lab == lab, Student.id.in_(recorded_here) if recorded_here else False)
     ).order_by(func.lower(Student.roll_number))
     rows = []
-    plc_map = get_plc_roll_map(db)
     for s in db.scalars(stmt):
         r = records.get(s.id)
         rows.append(AttendanceRow(
@@ -84,7 +80,6 @@ def _day(db: Session, d: date, lab: str, skipped: int = 0) -> AttendanceDay:
             status=r.status if r else None,
             recorded_lab=(r.lab or s.lab) if r else None,
             locked=bool(r and r.lab and r.lab != lab),
-            plc_roll_number=plc_map.get(s.id, ""),
         ))
     return AttendanceDay(session_date=d, lab=lab, saved=bool(recorded_here), students=rows, skipped=skipped)
 

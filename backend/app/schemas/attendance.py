@@ -27,7 +27,6 @@ class AttendanceRow(BaseModel):
     status: Status | None     # None = not marked yet for this date
     recorded_lab: Lab | None  # lab the existing mark was taken in
     locked: bool = False      # already marked on this date in the OTHER lab -> shown read-only
-    plc_roll_number: str = ""
 
 
 class AttendanceDay(BaseModel):
@@ -54,7 +53,6 @@ class StudentSummary(BaseModel):
     absent: int
     total: int
     percentage: float
-    plc_roll_number: str = ""
 
 
 class ReportOut(BaseModel):

@@ -4,11 +4,11 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.auth.jwt import get_current_admin
-from app.core.plc import get_plc_roll_map
+from app.core.plc import generate_next_plc_roll_number
 from app.database import get_db
 from app.models.student import Student
 from app.schemas.student import (
-    BulkProblem, BulkResult, LabChange, Lab, StudentBulk, StudentIn, StudentOut, StudentUpdate,
+    BulkProblem, BulkResult, LabChange, Lab, StudentBulk, StudentIn, StudentOut, StudentUpdate, _squash,
 )
 
 # Every route here requires a valid admin JWT.
@@ -35,28 +35,27 @@ def list_students(lab: Lab | None = Query(default=None), db: Session = Depends(g
     stmt = select(Student).order_by(func.lower(Student.roll_number))
     if lab:
         stmt = stmt.where(Student.lab == lab)
-    students = db.scalars(stmt).all()
-    plc_map = get_plc_roll_map(db)
-    result = []
-    for s in students:
-        so = StudentOut.model_validate(s)
-        so.plc_roll_number = plc_map.get(s.id, "")
-        result.append(so)
-    return result
+    return db.scalars(stmt).all()
 
 
 @router.post("", response_model=StudentOut, status_code=status.HTTP_201_CREATED)
 def add_student(data: StudentIn, db: Session = Depends(get_db)):
-    if _roll_taken(db, data.roll_number):
-        raise HTTPException(status.HTTP_409_CONFLICT, f"Registration number {data.roll_number} already exists.")
-    student = Student(**data.model_dump())
+    roll = data.roll_number.strip()
+    if not roll:
+        # Auto-generate unique registration number
+        n = 1
+        while _roll_taken(db, f"AUTO{n:03d}"):
+            n += 1
+        roll = f"AUTO{n:03d}"
+    elif _roll_taken(db, roll):
+        raise HTTPException(status.HTTP_409_CONFLICT, f"Registration number {roll} already exists.")
+    
+    plc_code = generate_next_plc_roll_number(db, data.lab)
+    student = Student(roll_number=roll, name=data.name, lab=data.lab, plc_roll_number=plc_code)
     db.add(student)
     db.commit()
     db.refresh(student)
-    plc_map = get_plc_roll_map(db)
-    so = StudentOut.model_validate(student)
-    so.plc_roll_number = plc_map.get(student.id, "")
-    return so
+    return student
 
 
 @router.post("/bulk", response_model=BulkResult)
@@ -65,6 +64,11 @@ def add_students_bulk(data: StudentBulk, db: Session = Depends(get_db)):
     seen = {r.lower() for r in db.scalars(select(Student.roll_number)).all()}
     created, skipped, rejected = 0, [], []
     for item in data.students:
+        roll_clean = _squash(item.roll_number) if isinstance(item.roll_number, str) else ""
+        name_clean = _squash(item.name) if isinstance(item.name, str) else ""
+        if not roll_clean or not name_clean:
+            rejected.append(BulkProblem(roll_number=item.roll_number or "(blank)", reason="Registration number and name are both required."))
+            continue
         try:
             s = StudentIn(roll_number=item.roll_number, name=item.name, lab=item.lab)
         except ValidationError as e:
@@ -82,7 +86,8 @@ def add_students_bulk(data: StudentBulk, db: Session = Depends(get_db)):
             skipped.append(s.roll_number)
             continue
         seen.add(s.roll_number.lower())
-        db.add(Student(**s.model_dump()))
+        plc_code = generate_next_plc_roll_number(db, s.lab)
+        db.add(Student(**s.model_dump(), plc_roll_number=plc_code))
         created += 1
     db.commit()
     return BulkResult(created=created, skipped=skipped, rejected=rejected)
@@ -98,10 +103,7 @@ def update_student(student_id: int, data: StudentUpdate, db: Session = Depends(g
         student.lab = data.lab
     db.commit()
     db.refresh(student)
-    plc_map = get_plc_roll_map(db)
-    so = StudentOut.model_validate(student)
-    so.plc_roll_number = plc_map.get(student.id, "")
-    return so
+    return student
 
 
 @router.patch("/{student_id}/lab", response_model=StudentOut)
@@ -111,10 +113,7 @@ def change_lab(student_id: int, data: LabChange, db: Session = Depends(get_db)):
     student.lab = data.lab
     db.commit()
     db.refresh(student)
-    plc_map = get_plc_roll_map(db)
-    so = StudentOut.model_validate(student)
-    so.plc_roll_number = plc_map.get(student.id, "")
-    return so
+    return student
 
 
 @router.delete("/{student_id}", status_code=status.HTTP_204_NO_CONTENT)

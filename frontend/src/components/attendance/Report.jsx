@@ -96,7 +96,7 @@ export default function Report() {
               <table className="table stack-table report-table">
                 <thead>
                   <tr>
-                    <th>PLC Roll No</th><th>Reg No</th><th>Name</th><th>Lab</th>
+                    <th>Reg No</th><th>Name</th><th>Lab</th>
                     <th className="num-col">Present</th><th className="num-col">Absent</th><th className="num-col">Total</th>
                     <th>Attendance %</th>
                   </tr>
@@ -106,7 +106,6 @@ export default function Report() {
                     const isLow = s.total > 0 && s.percentage < threshold;
                     return (
                       <tr key={s.id} className={isLow ? "row-low" : ""}>
-                        <td data-label="PLC Roll No" className="mono"><span className="plc-roll-badge">{s.plc_roll_number}</span></td>
                         <td data-label="Reg No" className="mono">{s.roll_number}</td>
                         <td data-label="Name" className="strong">{s.name}</td>
                         <td data-label="Lab"><LabBadge lab={s.lab} /></td>

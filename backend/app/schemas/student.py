@@ -14,7 +14,7 @@ def _squash(v):
 
 class StudentIn(BaseModel):
     """Used to add a student (lab defaults to Lab 1)."""
-    roll_number: str = Field(min_length=1, max_length=30)  # registration number
+    roll_number: str = Field(default="", max_length=30)  # registration number
     name: str = Field(min_length=1, max_length=100)
     lab: Lab = "Lab 1"
 
@@ -26,7 +26,7 @@ class StudentIn(BaseModel):
     @field_validator("roll_number")
     @classmethod
     def check_reg(cls, v: str) -> str:
-        if not _REG_RE.match(v):
+        if v and not _REG_RE.match(v):
             raise ValueError("Registration number can only contain letters, numbers and - _ . /")
         return v
 
@@ -61,7 +61,6 @@ class StudentOut(BaseModel):
     roll_number: str
     name: str
     lab: Lab
-    plc_roll_number: str = ""
 
 
 class BulkItem(BaseModel):

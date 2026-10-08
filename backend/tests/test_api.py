@@ -58,6 +58,7 @@ r = c.post("/admin/students", headers=H, json={"roll_number": "TEST001", "name":
 check("create student", r.status_code == 201 and r.json()["lab"] == "Lab 1")
 A = r.json()["id"]
 check("duplicate reg (case-insensitive) rejected", c.post("/admin/students", headers=H, json={"roll_number": "test001", "name": "x"}).status_code == 409)
+check("blank roll auto-generates a new unused registration number", c.post("/admin/students", headers=H, json={"roll_number": "", "name": "Auto Student", "lab": "Lab 1"}).status_code == 201)
 check("invalid lab rejected", c.post("/admin/students", headers=H, json={"roll_number": "T2", "name": "x", "lab": "Lab 3"}).status_code == 422)
 check("edit student", c.put(f"/admin/students/{A}", headers=H, json={"roll_number": "TEST001", "name": "Student A2"}).json()["name"] == "Student A2")
 b = c.post("/admin/students/bulk", headers=H, json={"students": [

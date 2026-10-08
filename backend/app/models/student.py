@@ -23,6 +23,7 @@ class Student(Base):
     roll_number: Mapped[str] = mapped_column(String(30), unique=True, index=True)  # registration number
     name: Mapped[str] = mapped_column(String(100))
     lab: Mapped[str] = mapped_column(String(10), default=DEFAULT_LAB, server_default=DEFAULT_LAB, index=True)
+    plc_roll_number: Mapped[str | None] = mapped_column(String(20), nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     # Deleting a student also deletes their attendance records.
